@@ -1,6 +1,11 @@
 import React from "react";
+import Login from "../Login/Login";
 import "./Home.css";
 
 export default function Home() {
-	return <div>Home</div>;
+	return (
+		<div>
+			<Login />
+		</div>
+	);
 }
