@@ -19,7 +19,7 @@ export function NormalInputs({
 	workFlowName,
 }) {
 	return (
-		<Form.Group className=' my-2' as={Col} md='' controlId=''>
+		<Form.Group className=' my-2' md='' controlId=''>
 			<Form.Label className={required ? "required" : ""}>
 				{label}
 			</Form.Label>
