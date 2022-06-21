@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import "./Login.css";
 import { NormalInputs } from "../ModularComponents/Inputs/Inputs";
+import { useHistory } from "react-router-dom";
 
 export default function Login() {
 	const [loginCred, setLoginCred] = useState({});
+	const history = useHistory();
 	const onBlur = (e) => {
 		const name = e.target.name;
 		const value = e.target.value;
@@ -13,6 +15,22 @@ export default function Login() {
 			newData[name.toLowerCase()] = value;
 			return newData;
 		});
+	};
+	const loginHandle = () => {
+		if (
+			loginCred.email === "admin@admin.com" &&
+			loginCred.password === "admin123"
+		) {
+			history.push({
+				pathname: "/dashboard",
+				state: { admin: true },
+			});
+		} else {
+			history.push({
+				pathname: "/dashboard",
+				state: { admin: false },
+			});
+		}
 	};
 	return (
 		<div className='login'>
@@ -35,7 +53,9 @@ export default function Login() {
 						onBlur={onBlur}
 					/>
 					<div className='d-flex justify-content-center my-2'>
-						<button className='btn btn-success w-100 py-2'>
+						<button
+							onClick={loginHandle}
+							className='btn btn-success w-100 py-2'>
 							Login
 						</button>
 					</div>
