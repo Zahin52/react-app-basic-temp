@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocation, useRouteMatch } from "react-router-dom";
+import { useHistory, useLocation, useRouteMatch } from "react-router-dom";
 import { Route, Switch } from "react-router-dom";
 
 import "./Dashboard.css";
@@ -9,15 +9,27 @@ import Dashscreen from "./Dashscreen/Dashscreen";
 
 export default function Dashboard() {
 	let { path, url } = useRouteMatch();
+	const history = useHistory();
 	const location = useLocation();
 	console.log(location.state.admin);
+	const logout = () => {
+		history.push("/");
+	};
 	return (
 		<div
-			className='d-flex dashboard'
+			className='d-flex flex-column dashboard '
 			style={{
 				height: "100vh",
 			}}>
-			{location.state.admin === true ? "admin" : "normal user"}
+			<div className='bg-dark p-3 text-end text-white'>
+				<span>
+					{location.state.admin === true ? "admin" : "normal user"}
+				</span>
+				<button onClick={logout} className='btn btn-danger ms-2'>
+					LOGOUT
+				</button>
+			</div>
+			<div className='flex-1 bg-info'></div>
 		</div>
 	);
 }
