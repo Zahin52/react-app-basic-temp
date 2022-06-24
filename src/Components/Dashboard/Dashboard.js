@@ -1,6 +1,7 @@
 import React from "react";
 import { useHistory, useLocation, useRouteMatch } from "react-router-dom";
 import { Route, Switch } from "react-router-dom";
+import Map from "../Map/Map";
 
 import "./Dashboard.css";
 import Dashscreen from "./Dashscreen/Dashscreen";
@@ -29,7 +30,9 @@ export default function Dashboard() {
 					LOGOUT
 				</button>
 			</div>
-			<div className='flex-1 bg-info'></div>
+			<div className='flex-1 '>
+				<Map />
+			</div>
 		</div>
 	);
 }
