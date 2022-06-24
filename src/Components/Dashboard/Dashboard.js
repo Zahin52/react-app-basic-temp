@@ -7,13 +7,17 @@ import "./Dashboard.css";
 import Dashscreen from "./Dashscreen/Dashscreen";
 
 // import SideMenu from "./SideMenu/SideMenu";
+import { useDispatch } from "react-redux";
+import { setLogin } from "../../Redux-toolkit/LoginSlice";
 
 export default function Dashboard() {
+	const dispatch = useDispatch();
 	let { path, url } = useRouteMatch();
 	const history = useHistory();
 	const location = useLocation();
 	console.log(location.state.admin);
 	const logout = () => {
+		dispatch(setLogin(false));
 		history.push("/");
 	};
 	return (

@@ -5,6 +5,7 @@ import Admin from "./Components/Admin/Admin";
 import Dashboard from "./Components/Dashboard/Dashboard";
 import Home from "./Components/Home/Home";
 import NormalUser from "./Components/NormalUser/NormalUser";
+import PrivateRoute from "./PrivateRoute/PrivateRoute";
 
 function App() {
 	return (
@@ -13,9 +14,13 @@ function App() {
 				<Route exact path='/'>
 					<Home />
 				</Route>
-				<Route exact path='/dashboard'>
+				<PrivateRoute
+					exact
+					path='/dashboard'
+					component={Dashboard}></PrivateRoute>
+				{/* <Route exact path='/dashboard'>
 					<Dashboard />
-				</Route>
+				</Route> */}
 				{/* <Route exact path='/normal'>
 					<NormalUser />
 				</Route> */}

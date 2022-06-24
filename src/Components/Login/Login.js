@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import "./Login.css";
 import { NormalInputs } from "../ModularComponents/Inputs/Inputs";
 import { useHistory } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setLogin } from "../../Redux-toolkit/LoginSlice";
 
 export default function Login() {
+	const dispatch = useDispatch();
 	const [loginCred, setLoginCred] = useState({});
 	const history = useHistory();
 	const onBlur = (e) => {
@@ -21,11 +24,13 @@ export default function Login() {
 			loginCred.email === "admin@admin.com" &&
 			loginCred.password === "admin123"
 		) {
+			dispatch(setLogin(true));
 			history.push({
 				pathname: "/dashboard",
 				state: { admin: true },
 			});
 		} else {
+			dispatch(setLogin(true));
 			history.push({
 				pathname: "/dashboard",
 				state: { admin: false },
