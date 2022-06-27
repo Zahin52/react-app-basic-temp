@@ -12,6 +12,7 @@ import {
 } from "@react-google-maps/api";
 // import VehicleDetailsModal from "./Components/VehicleDetailsModal/VehicleDetailsModal";
 import VehicleDetailsModal from "../VehicleDetailsModal/VehicleDetailsModal";
+import { store } from "../../Redux-toolkit/Store";
 
 const containerStyle = {
 	width: "100%",
@@ -52,6 +53,7 @@ function Map() {
 		});
 		marker.addListener("click", () => infowindow.open(map, marker));
 	};
+
 	useEffect(() => {
 		fetch("/sirTrack2.geojson")
 			.then((res) => res.json())
@@ -79,8 +81,8 @@ function Map() {
 						title: "Marker 1",
 						driver: "Saman",
 						License: "Sa1545465",
-						Start: "Mysyru",
-						end: "Tudo tech",
+						Start: "Tudo tech",
+						end: "My home",
 					},
 					{
 						position: start1,
@@ -91,6 +93,29 @@ function Map() {
 						License: "Za1545465",
 						Start: "Tudo tech",
 						end: "My home",
+					},
+					{
+						position: {
+							lat: 19.228825,
+							lng: 72.854118,
+						},
+						icon: "http://www.mamotorcycles.com.mt/wp-content/uploads/2020/11/22MY_Ninja_650_WT1_STU__1_.png",
+						info: "<div><h2>Marker 2</h2><p>Truck no : 2<br/> Driver : Zahin</p></div>",
+						title: "Mumbai",
+						driver: "Zahin",
+						License: "Za1545465",
+						Start: "Goa",
+						end: "Mumbai",
+					},
+					{
+						position: { lat: 15.496777, lng: 73.827827 },
+						icon: "http://www.mamotorcycles.com.mt/wp-content/uploads/2020/11/22MY_Ninja_650_WT1_STU__1_.png",
+						info: "<div><h2>Marker 2</h2><p>Truck no : 2<br/> Driver : Zahin</p></div>",
+						title: "Goa",
+						driver: "Zahin",
+						License: "Za1545465",
+						Start: "Goa",
+						end: "Mumbai",
 					},
 				];
 				console.log(start);
@@ -153,11 +178,18 @@ function Map() {
 		console.log(coordinates, isLoaded);
 		if (isLoaded && map != null) {
 			// alert("hello");
-			var bounds = new window.google.maps.LatLngBounds();
-			markerList.map((x) => {
+			// eslint-disable-next-line no-undef
+			var bounds = new google.maps.LatLngBounds();
+			markerList.map((x, id) => {
 				const marker = createMarker(x);
-				m.push(marker);
-				bounds.extend(marker.position);
+				m.push({ marker, id });
+				console.log(marker.position.lat());
+				// eslint-disable-next-line no-undef
+				const latLng = new google.maps.LatLng(
+					marker.position.lat(),
+					marker.position.lng()
+				);
+				bounds.extend(latLng);
 			});
 			map.fitBounds(bounds);
 			if (coordinates != null && coordinates2 != null && isLoaded) {
@@ -165,16 +197,25 @@ function Map() {
 				let i = 0;
 				setTimeout(() => {
 					const interval = setInterval(() => {
+						let newPosition;
 						if (i < len) {
-							const start = {
+							newPosition = {
 								lng: coordinates[i][0],
 								lat: coordinates[i][1],
 							};
-							setStart(start);
-							m[0].setPosition(start);
+							// setStart(start);
+							m[0]?.marker.setPosition(newPosition);
+							if (m[0]?.marker !== undefined) {
+								setMarker((prev) => {
+									const newData = [...prev];
+									newData[m[0]?.id]["position"] = newPosition;
+
+									return newData;
+								});
+							}
 
 							if (i === len - 1) {
-								m[0].setIcon({
+								m[0]?.marker.setIcon({
 									url: "https://creazilla-store.fra1.digitaloceanspaces.com/cliparts/14210/traffic-collision-clipart-md.png",
 									// set marker width and height
 									// eslint-disable-next-line no-undef
@@ -182,15 +223,23 @@ function Map() {
 								});
 							}
 						}
-						const start1 = {
+						newPosition = {
 							lng: coordinates2[i][0],
 							lat: coordinates2[i][1],
 						};
 
-						setStart1(start1);
-						m[1].setPosition(start1);
+						// setStart1(start1);
+						m[1]?.marker.setPosition(newPosition);
+						if (m[1]?.marker != undefined) {
+							setMarker((prev) => {
+								const newData = [...prev];
+								newData[m[1]?.id]["position"] = newPosition;
+
+								return newData;
+							});
+						}
 						if (i === coordinates2.length - 1) {
-							m[1].setIcon({
+							m[1]?.marker.setIcon({
 								url: "https://cdn.pixabay.com/photo/2012/04/24/13/12/motorcycle-40000_960_720.png",
 								// set marker width and height
 								// eslint-disable-next-line no-undef
@@ -199,7 +248,7 @@ function Map() {
 							clearInterval(interval);
 						}
 						i += 1;
-					}, 50);
+					}, 500);
 				}, 5000);
 			}
 		}
@@ -207,6 +256,33 @@ function Map() {
 
 	const handleSingleCLick = (e) => {
 		console.log("clicked", e);
+	};
+	const FilterTheMarker = (StartPoint, destination) => {
+		const filteredMarker = markerList.filter(
+			(item) => item.Start === StartPoint && item.end === destination
+		);
+		return filteredMarker;
+	};
+	const MapNewBoundSet = (filteredMarker, bounds) => {
+		filteredMarker.forEach((item) => {
+			bounds.extend(item.position);
+		});
+	};
+	const FilterMarkerBound = async () => {
+		var bounds = new window.google.maps.LatLngBounds();
+		var StartPoint = document.getElementById("textboxid").value;
+		var destination = document.getElementById("textboxid1").value;
+		try {
+			const filteredMarker = await FilterTheMarker(
+				StartPoint,
+				destination
+			);
+			MapNewBoundSet(filteredMarker, bounds);
+
+			map.fitBounds(bounds);
+		} catch (error) {
+			console.log(error);
+		}
 	};
 	return (
 		// <Home />
@@ -222,31 +298,23 @@ function Map() {
 					onLoad={onLoad}
 					onUnmount={onUnmount}
 					mapContainerStyle={containerStyle}
-					center={center}
-					zoom={9}>
-					{/* Child components, such as markers, info windows, etc. */}
-					{/* {coordinates != null && (
-					<>
-						<Marker
-							id='marker1'
-							onLoad={(marker) => onLoads(marker, "Truck")}
-							position={start}
-							key='marker_1'
-							icon={{
-								url: "https://purepng.com/public/uploads/large/yellow-truck-n1f.png",
-								scaledSize: new window.google.maps.Size(40, 32),
-							}}
+					// center={center}
+					zoom={10}>
+					<div
+						className='position-absolute'
+						style={{ left: "15rem" }}>
+						<input onBlur={() => {}} id='textboxid' type='text' />
+					</div>
+					<div
+						className='position-absolute'
+						style={{ left: "35rem" }}>
+						<input
+							onBlur={FilterMarkerBound}
+							id='textboxid1'
+							type='text'
 						/>
-
-						<Marker
-							icon={{
-								url: "http://www.mamotorcycles.com.mt/wp-content/uploads/2020/11/22MY_Ninja_650_WT1_STU__1_.png",
-								scaledSize: new window.google.maps.Size(40, 32),
-							}}
-							onLoad={(marker) => onLoads(marker, "Bike")}
-							position={start1}></Marker>
-					</>
-				)} */}
+					</div>
+					{/* Child components, such as markers, info windows, etc. */}
 				</GoogleMap>
 			</>
 		) : (
