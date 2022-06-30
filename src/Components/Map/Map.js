@@ -112,7 +112,7 @@ function Map() {
 						},
 						icon: "http://www.mamotorcycles.com.mt/wp-content/uploads/2020/11/22MY_Ninja_650_WT1_STU__1_.png",
 						info: "<div><h2>Marker 2</h2><p>Truck no : 2<br/> Driver : Zahin</p></div>",
-						company: "Apple Ltd.",
+						company: "Apple pvt. Ltd.",
 						title: "Mumbai",
 						driver: "Zahin",
 						License: "Za1545465",
