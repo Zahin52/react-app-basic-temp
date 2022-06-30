@@ -38,10 +38,10 @@ export default function Dashscreen(props) {
 				</div>
 			</div>
 			<div className='d-flex' style={{ flexGrow: 1 }}>
-				<div className='col-2 px-2'>
+				<div className='col-3 px-2'>
 					<Sidebar />
 				</div>
-				<div className='col-10'>
+				<div className='col-9'>
 					<Map />
 				</div>
 			</div>

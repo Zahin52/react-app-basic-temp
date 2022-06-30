@@ -3,7 +3,17 @@ import { useSelector } from "react-redux";
 import { motion, useAnimation } from "framer-motion";
 import "./Sidebar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAngleLeft, faPhone } from "@fortawesome/free-solid-svg-icons";
+import {
+	faAngleLeft,
+	faPhone,
+	faTruck,
+	faPencil,
+	faTrash,
+	faBell,
+	faMapMarkerAlt,
+	faCross,
+	faCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import { Tab, Tabs } from "react-bootstrap";
 
 export default function Sidebar() {
@@ -25,12 +35,13 @@ export default function Sidebar() {
 				`[data-markerId=${"marker-" + id}]`
 			);
 			swithToActive.classList.add("active");
-        } else {
-            setPrevActiveId("marker-" + id);
+		} else {
+			setPrevActiveId("marker-" + id);
 			const swithToNotActive = document.querySelector(
 				`[data-markerId=${prevActiveId}]`
 			);
 			swithToNotActive.classList.remove("active");
+
 			const swithToActive = document.querySelector(
 				`[data-markerId=${"marker-" + id}]`
 			);
@@ -43,6 +54,10 @@ export default function Sidebar() {
 		setCurrentId(id);
 	};
 	const slidebarClose = () => {
+		const swithToNotActive = document.querySelector(
+			`[data-markerId=${prevActiveId}]`
+		);
+		swithToNotActive.classList.remove("active");
 		controlAnimation.start({
 			x: -500,
 			opacity: 0,
@@ -54,29 +69,63 @@ export default function Sidebar() {
 			style={{ zIndex: 1 }}>
 			<p className='text-center'>Active trip</p>
 			<div>
+				{/*
+                ===========================
+                sidebar track marker list 
+                ===========================
+                */}
+
 				{allMarkers?.map((item, id) => (
 					<div
 						key={"marker-" + id}
 						data-markerId={"marker-" + id}
 						onClick={() => slidebarOpen(id)}
-						className='markers d-flex flex-column my-2 '
+						className='markers  my-2 '
 						style={{ cursor: "pointer" }}>
-						<span>Vss - {item.License}</span>
-						<small>
-							{item.Start} - {item.end}
-						</small>
-						<small>{item.company}</small>
+						<div className='d-flex '>
+							<div className='text-white truckLogo me-3'>
+								<FontAwesomeIcon icon={faTruck} />
+							</div>
+							<div
+								className='d-flex flex-column'
+								style={{
+									flexGrow: 1,
+								}}>
+								<div
+									className='d-flex flex-column'
+									style={{
+										borderBottom: "1px solid #d3d3d3",
+									}}>
+									<span>Vss - {item.License}</span>
+									<small>
+										{item.Start} - {item.end}
+									</small>
+									<small>{item.company}</small>
+								</div>
+								<div className='d-flex align-item-center justify-content-between my-2'>
+									<FontAwesomeIcon icon={faPencil} />
+									<FontAwesomeIcon icon={faTrash} />
+									<FontAwesomeIcon icon={faBell} />
+									<FontAwesomeIcon icon={faMapMarkerAlt} />
+									<FontAwesomeIcon
+										title='sos'
+										icon={faCircle}></FontAwesomeIcon>
+								</div>
+							</div>
+						</div>
 					</div>
 				))}
 			</div>
+
+			{/* 
+            ========================
+            Sliding bar on click 
+            ========================
+            */}
 			<motion.div
 				className='slidingBar'
-				// style={{ left: -1000 }}
 				initial={{ opacity: 1, x: -500 }}
-				animate={controlAnimation}
-				// variants={variants}
-				// transition={{ delay: 2 }}
-			>
+				animate={controlAnimation}>
 				<div className='d-flex align-items-center '>
 					<span
 						style={{ cursor: "pointer" }}
@@ -85,7 +134,6 @@ export default function Sidebar() {
 						<FontAwesomeIcon icon={faAngleLeft} />
 					</span>
 					<span>{allMarkers[currentId]?.License}</span>
-					{/* <span></span> */}
 				</div>
 				<div className='d-flex flex-wrap align-items-center justify-content-between'>
 					<div className='d-flex flex-column p-1'>
