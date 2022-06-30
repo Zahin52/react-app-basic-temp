@@ -13,6 +13,8 @@ import {
 // import VehicleDetailsModal from "./Components/VehicleDetailsModal/VehicleDetailsModal";
 import VehicleDetailsModal from "../VehicleDetailsModal/VehicleDetailsModal";
 import { store } from "../../Redux-toolkit/Store";
+import { useDispatch, useSelector } from "react-redux";
+import { setMarkers } from "../../Redux-toolkit/MarkerSlice";
 
 const containerStyle = {
 	width: "100%",
@@ -27,11 +29,13 @@ function Map() {
 	const [start1, setStart1] = useState(null);
 	const [center, setcenter] = useState(null);
 	const [details, setDetails] = useState(null);
+	const [source, setSource] = useState([]);
+	const [destination, setDestination] = useState([]);
 	const [VehicleDetailsModalshow, setVehicleDetailsModal] =
 		React.useState(false);
 	const [map, setMap] = React.useState(/** @type google.maps.Map */ (null));
-	// const [marker1, setMarker1] = React.useState(null);
-	// const [end, setEnd] = useState(null);
+	// const { allMarkers } = useSelector((state) => state.allMarkers);
+	const dispatch = useDispatch();
 
 	// var directionsService = new google.maps.DirectionsService();
 	const { isLoaded } = useJsApiLoader({
@@ -73,26 +77,33 @@ function Map() {
 					lng: coordinateData2[0][0],
 					lat: coordinateData2[0][1],
 				};
+				console.log(start1);
 				const Marker = [
 					{
 						position: start,
 						icon: "https://purepng.com/public/uploads/large/yellow-truck-n1f.png",
 						info: "<div><h2>Marker 1</h2><p>Truck no : 1<br/> Driver : Saman</p></div>",
+						company: "Flipcart Ltd.",
 						title: "Marker 1",
 						driver: "Saman",
 						License: "Sa1545465",
 						Start: "Tudo tech",
 						end: "My home",
+						startDate: "11/06/22",
+						endDate: "15/06/22",
 					},
 					{
 						position: start1,
 						icon: "http://www.mamotorcycles.com.mt/wp-content/uploads/2020/11/22MY_Ninja_650_WT1_STU__1_.png",
 						info: "<div><h2>Marker 2</h2><p>Truck no : 2<br/> Driver : Zahin</p></div>",
+						company: "Amazon Ltd.",
 						title: "Marker 2",
-						driver: "Zahin",
-						License: "Za1545465",
+						driver: "Arvin",
+						License: "Ar15424652",
 						Start: "Tudo tech",
 						end: "My home",
+						startDate: "11/06/22",
+						endDate: "15/06/22",
 					},
 					{
 						position: {
@@ -101,25 +112,35 @@ function Map() {
 						},
 						icon: "http://www.mamotorcycles.com.mt/wp-content/uploads/2020/11/22MY_Ninja_650_WT1_STU__1_.png",
 						info: "<div><h2>Marker 2</h2><p>Truck no : 2<br/> Driver : Zahin</p></div>",
+						company: "Apple Ltd.",
 						title: "Mumbai",
 						driver: "Zahin",
 						License: "Za1545465",
 						Start: "Goa",
 						end: "Mumbai",
+						startDate: "11/06/22",
+						endDate: "15/06/22",
 					},
 					{
 						position: { lat: 15.496777, lng: 73.827827 },
 						icon: "http://www.mamotorcycles.com.mt/wp-content/uploads/2020/11/22MY_Ninja_650_WT1_STU__1_.png",
 						info: "<div><h2>Marker 2</h2><p>Truck no : 2<br/> Driver : Zahin</p></div>",
+						company: "VN Cosmetics",
 						title: "Goa",
-						driver: "Zahin",
-						License: "Za1545465",
+						driver: "Puja",
+						License: "Pu1545465",
 						Start: "Goa",
 						end: "Mumbai",
+						startDate: "11/06/22",
+						endDate: "15/06/22",
 					},
 				];
-				console.log(start);
-
+				// console.log(start);
+				// try {
+				// 	dispatch(setMarkers(Marker));
+				// } catch (error) {
+				// 	console.log(error);
+				// }
 				setMarker(Marker);
 				setcenter(start);
 				setStart(start);
@@ -177,10 +198,28 @@ function Map() {
 	useEffect(() => {
 		console.log(coordinates, isLoaded);
 		if (isLoaded && map != null) {
+			dispatch(setMarkers(markerList));
 			// alert("hello");
 			// eslint-disable-next-line no-undef
 			var bounds = new google.maps.LatLngBounds();
+			let sources = [];
+			let destinations = [];
 			markerList.map((x, id) => {
+				console.log(source.includes(x.Start), x.Start, source);
+				if (!sources.includes(x.Start)) {
+					sources = [...sources, x.Start];
+				}
+				if (!destinations.includes(x.end)) {
+					destinations = [...destinations, x.end];
+				}
+				setSource((prev) => {
+					const newSources = [...sources];
+					return newSources;
+				});
+				setDestination((prev) => {
+					const newDestination = [...destinations];
+					return newDestination;
+				});
 				const marker = createMarker(x);
 				m.push({ marker, id });
 				console.log(marker.position.lat());
@@ -247,6 +286,7 @@ function Map() {
 							});
 							clearInterval(interval);
 						}
+
 						i += 1;
 					}, 500);
 				}, 5000);
@@ -257,6 +297,7 @@ function Map() {
 	const handleSingleCLick = (e) => {
 		console.log("clicked", e);
 	};
+
 	const FilterTheMarker = (StartPoint, destination) => {
 		const filteredMarker = markerList.filter(
 			(item) => item.Start === StartPoint && item.end === destination
@@ -270,16 +311,17 @@ function Map() {
 	};
 	const FilterMarkerBound = async () => {
 		var bounds = new window.google.maps.LatLngBounds();
-		var StartPoint = document.getElementById("textboxid").value;
-		var destination = document.getElementById("textboxid1").value;
+		var StartPoint = document.getElementById("source").value;
+		var destination = document.getElementById("destination").value;
 		try {
 			const filteredMarker = await FilterTheMarker(
 				StartPoint,
 				destination
 			);
-			MapNewBoundSet(filteredMarker, bounds);
-
-			map.fitBounds(bounds);
+			if (filteredMarker.length > 0) {
+				MapNewBoundSet(filteredMarker, bounds);
+				map.fitBounds(bounds);
+			}
 		} catch (error) {
 			console.log(error);
 		}
@@ -303,16 +345,43 @@ function Map() {
 					<div
 						className='position-absolute'
 						style={{ left: "15rem" }}>
-						<input onBlur={() => {}} id='textboxid' type='text' />
+						<select
+							name='source'
+							id='source'
+							onChange={FilterMarkerBound}>
+							<option value='' disabled selected>
+								Select Source
+							</option>
+
+							{source.map((item, id) => {
+								return (
+									<option key={`source` + id} value={item}>
+										{item}
+									</option>
+								);
+							})}
+						</select>
 					</div>
 					<div
 						className='position-absolute'
 						style={{ left: "35rem" }}>
-						<input
-							onBlur={FilterMarkerBound}
-							id='textboxid1'
-							type='text'
-						/>
+						<select
+							name='source'
+							id='destination'
+							onChange={FilterMarkerBound}>
+							<option value='destination' disabled selected>
+								Select Destination
+							</option>
+							{destination.map((item, id) => {
+								return (
+									<option
+										key={`destination` + id}
+										value={item}>
+										{item}
+									</option>
+								);
+							})}
+						</select>
 					</div>
 					{/* Child components, such as markers, info windows, etc. */}
 				</GoogleMap>

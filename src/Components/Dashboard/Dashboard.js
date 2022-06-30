@@ -23,8 +23,9 @@ export default function Dashboard() {
 				<Navbar />
 			</div>
 
-			<div className='flex-1 '>
-				<Map />
+            <div className='flex-1 '>
+                <Dashscreen/>
+				
 			</div>
 		</div>
 	);
