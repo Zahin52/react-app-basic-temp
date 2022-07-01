@@ -15,6 +15,7 @@ import VehicleDetailsModal from "../VehicleDetailsModal/VehicleDetailsModal";
 import { store } from "../../Redux-toolkit/Store";
 import { useDispatch, useSelector } from "react-redux";
 import { setMarkers } from "../../Redux-toolkit/MarkerSlice";
+import { setMapRef } from "../../Redux-toolkit/MapSlice";
 
 const containerStyle = {
 	width: "100%",
@@ -35,6 +36,7 @@ function Map() {
 		React.useState(false);
 	const [map, setMap] = React.useState(/** @type google.maps.Map */ (null));
 	// const { allMarkers } = useSelector((state) => state.allMarkers);
+	// const { MapRef } = useSelector((state) => state.MapRef);
 	const dispatch = useDispatch();
 
 	// var directionsService = new google.maps.DirectionsService();
@@ -45,6 +47,7 @@ function Map() {
 	const onLoad = React.useCallback(function callback(map) {
 		// const bounds = new window.google.maps.LatLngBounds(start_point);
 		// map.fitBounds(bounds);
+		dispatch(setMapRef(map));
 		setMap(map);
 	}, []);
 	const onUnmount = React.useCallback(function callback(map) {
@@ -243,16 +246,16 @@ function Map() {
 								lat: coordinates[i][1],
 							};
 							// setStart(start);
+							let newData;
 							m[0]?.marker.setPosition(newPosition);
 							if (m[0]?.marker !== undefined) {
 								setMarker((prev) => {
-									const newData = [...prev];
+									newData = [...prev];
 									newData[m[0]?.id]["position"] = newPosition;
 
 									return newData;
 								});
 							}
-
 							if (i === len - 1) {
 								m[0]?.marker.setIcon({
 									url: "https://creazilla-store.fra1.digitaloceanspaces.com/cliparts/14210/traffic-collision-clipart-md.png",
@@ -286,7 +289,7 @@ function Map() {
 							});
 							clearInterval(interval);
 						}
-
+						// dispatch(setMarkers([...markerList]));
 						i += 1;
 					}, 500);
 				}, 5000);

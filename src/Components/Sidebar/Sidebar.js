@@ -21,7 +21,10 @@ export default function Sidebar() {
 	const [currentId, setCurrentId] = useState(null);
 	const [prevActiveId, setPrevActiveId] = useState(null);
 	const [key, setKey] = useState("Tracking");
+	const { MapRef } = useSelector((state) => state.MapRef);
+	// allMarkers = JSON.parse(allMarkers);
 	// console.log(allMarkers);
+	// useEffect(() => {}, []);
 	const variants = {
 		visible: { opacity: 1, x: "215px" },
 		hidden: { opacity: 0, x: "0%" },
@@ -63,12 +66,19 @@ export default function Sidebar() {
 			opacity: 0,
 		});
 	};
+	const centerFocusedMarker = (e, id) => {
+		e.stopPropagation();
+		const pos = allMarkers[id].position;
+		// console.log(MapRef);
+		MapRef?.setCenter(pos);
+		MapRef?.setZoom(10);
+	};
 	return (
 		<div
 			className='border p-2 h-100 position-relative'
 			style={{ zIndex: 1 }}>
 			<p className='text-center'>Active trip</p>
-			<div>
+			<div style={{ overflowY: "scroll" }}>
 				{/*
                 ===========================
                 sidebar track marker list 
@@ -81,7 +91,7 @@ export default function Sidebar() {
 						data-markerId={"marker-" + id}
 						onClick={() => slidebarOpen(id)}
 						className='markers  my-2 '
-						style={{ cursor: "pointer" }}>
+						style={{ cursor: "pointer", zIndex: 2 }}>
 						<div className='d-flex '>
 							<div className='text-white truckLogo me-3'>
 								<FontAwesomeIcon icon={faTruck} />
@@ -102,14 +112,31 @@ export default function Sidebar() {
 									</small>
 									<small>{item.company}</small>
 								</div>
-								<div className='d-flex align-item-center justify-content-between my-2'>
-									<FontAwesomeIcon icon={faPencil} />
-									<FontAwesomeIcon icon={faTrash} />
-									<FontAwesomeIcon icon={faBell} />
-									<FontAwesomeIcon icon={faMapMarkerAlt} />
-									<FontAwesomeIcon
-										title='sos'
-										icon={faCircle}></FontAwesomeIcon>
+								<div
+									// style={{ zIndex: 100 }}
+									className='d-flex align-item-center justify-content-between my-2'>
+									<span>
+										<FontAwesomeIcon icon={faPencil} />
+									</span>
+									<span>
+										<FontAwesomeIcon icon={faTrash} />
+									</span>
+									<span>
+										<FontAwesomeIcon icon={faBell} />
+									</span>
+									<span
+										onClick={(e) =>
+											centerFocusedMarker(e, id)
+										}>
+										<FontAwesomeIcon
+											icon={faMapMarkerAlt}
+										/>
+									</span>
+									<span>
+										<FontAwesomeIcon
+											title='sos'
+											icon={faCircle}></FontAwesomeIcon>
+									</span>
 								</div>
 							</div>
 						</div>
